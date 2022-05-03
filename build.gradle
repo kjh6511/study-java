@@ -1,0 +1,29 @@
+plugins {
+	id 'org.springframework.boot' version '2.6.7'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'com.spring'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22' //lombok
+	annotationProcessor 'org.projectlombok:lombok'
+
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.2.2' //Object-mapper
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
