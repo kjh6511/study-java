@@ -1,6 +1,8 @@
 package com.spring.study.memo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class MemoController {
@@ -9,7 +11,9 @@ public class MemoController {
         List<Integer> integerList = new ArrayList<>();
         Integer[] integerArry = {3, 1, 2, 5, 7};
         Member member = new Member();
-        List<Member> list = new ArrayList<>(member);
+        List<Member> list = new ArrayList<>();
+        List<Member> listA = new ArrayList<>(Collections.singletonList(member));
+
         //입출력
         System.out.println(string); // 출력
         System.out.println("member" + member); //memberMember [id=null, pw=0]
@@ -26,10 +30,11 @@ public class MemoController {
         int arryLength = integerArry.length;
 
         //리스트 List
+        //list == null은 인스턴스가 생성되자 않음
+        //list.isEmpty() 인스턴스는 생성되엇으나 list안에 아무것도 없음 = ""
         integerList.size(); // size = 0
         integerList.add(2); integerList.add(null); //리스트 값 추가 [2, null]
         integerList.remove(null); //null 지우기 [2]
-
 
 
         //람다식 Lamda
