@@ -1,40 +1,59 @@
 package com.spring.study.memo;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class MemoController {
+
     public static void main(String[] args) {
         String string = "string";
         List<Integer> integerList = new ArrayList<>();
-        Integer[] integerArry = {3, 1, 2, 5, 7};
+        Integer[] integerArry = {7, 1, 2, 3, 5};
         Member member = new Member(); //인스턴스
         List<Member> list = new ArrayList<>();
         List<Member> listA = new ArrayList<>(Collections.singletonList(member));
+        Random random = new Random();  random.nextInt(10);//난수생성
 
         //입출력
         System.out.println(string); // 출력
+        System.out.println("integerArry" + integerArry); //주소값이 나옴
+        System.out.println(Arrays.toString(integerArry)); //[3, 1, 2, 5, 7]
         System.out.println("member" + member); //memberMember [id=null, pw=0]
         System.out.println("list" + integerList); //list[], .isEmpty(null 아님)
         System.out.println("listA" + listA); // listA[Member [id=null, pw=0]]
+        Scanner scanner =  new Scanner(System.in); //값을 입력 받음
+        int sInt = scanner.nextInt(); // 10자리 숫자
+        //scanner.next(); //문자역(공백, 줄 바꿈 문자로 구분)
+        //scanner.nextLine(); //문자열 1줄
 
-        //문자열 String
+        //java
+        int scaInt = 5;
+       do{
+           scaInt = sInt;
+        }while (scaInt <= 0);            // scaInt가 0보다 클때까지 반복, do-while 무조건 한번은 실행
+        String result = scaInt % 2 == 0 ? "짝수" : "홀수";
+
+       //문자열 String
         string.startsWith("st"); //st로 시작하는 문자
         string.endsWith("ing"); //ing로 끝나는 문자
         string.charAt(2); //2번째 문자 (0부터시작)
+       // System.out.println("ABC".repeat(3)); //java11에서만 ABCABCABC 3번반복출력
 
         //배열 array
-        Integer ind0 = integerArry[0]; //0번째 값
+        Integer ind0 = integerArry[1]; //1번째 값
         int arryLength = integerArry.length;
+        Integer[] copyArry = integerArry.clone(); //배열 복제
+        Arrays.sort(integerArry,Collections.reverseOrder()); //내림차순 정렬 {7,5,3,2,1}
+        Arrays.sort(integerArry); //오름차순 정렬 {1,2,3,5,7}
+        int idx = Arrays.binarySearch(integerArry,5); // 이진검색, 정렬이 되어 있어야함, 인덱스반환
 
-        //리스트 List
+
+        //리스트
         //list == null은 인스턴스가 생성되자 않음
         //list.isEmpty() 인스턴스는 생성되엇으나 list안에 아무것도 없음 = ""
         integerList.size(); // size = 0
         integerList.add(2); integerList.add(null); //리스트 값 추가 [2, null]
         integerList.remove(null); //null 지우기 [2]
+        integerList.get(0); //0번째 값
 
         //람다식 Lamda
 
