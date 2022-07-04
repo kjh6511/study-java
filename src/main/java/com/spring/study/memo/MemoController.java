@@ -36,6 +36,12 @@ public class MemoController {
         string.startsWith("st"); //st로 시작하는 문자
         string.endsWith("ing"); //ing로 끝나는 문자
         string.charAt(2); //2번째 문자 (0부터시작)
+        string.length(); //문자열 길이
+        string.substring(1,3); //1~3번쨰 문자열
+        string.equals("st"); //문자열 비교 true, false 반환
+        string.compareTo("s");//문자열 비교(대소관계) 비교하는 값보다 작으면 음의정수, 크면 양의정수, 같으면 0
+        string.indexOf("s"); //s의 위치
+        string.indexOf("s", 3); //3버쨰부터 s의 위치
        // System.out.println("ABC".repeat(3)); //java11에서만 ABCABCABC 3번반복출력
 
         //배열 array

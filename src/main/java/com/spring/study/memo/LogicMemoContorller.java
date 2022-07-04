@@ -1,11 +1,13 @@
 package com.spring.study.memo;
 
 import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
+import sun.usagetracker.UsageTrackerClient;
 
 import java.util.Arrays;
 
 public class LogicMemoContorller {
     static int[] buff; //병합정렬 작업용 배열
+
     public static void main(String[] args) {
         int n = 5;
 
@@ -157,15 +159,45 @@ public class LogicMemoContorller {
 
         //퀵정렬
         int[] qui = sort.clone();
-        quickSort(qui,0, nx-1);
+        quickSort(qui, 0, nx - 1);
         System.out.println("퀵정렬 " + Arrays.toString(qui));
 
         //병합정렬
         int[] mer = sort.clone();
         buff = new int[nx];
-        mergeSort(mer,0,nx-1);
+        mergeSort(mer, 0, nx - 1);
         buff = null; //작업용 배열 해제
         System.out.println("병합정렬 " + Arrays.toString(mer));
+
+        //힙정렬 : 완전이진트리 -> 부모 >= 자식, 부모가 가지는 자식은 최대2개
+        int[] hea = sort.clone();
+        heapSort(hea, nx);
+        System.out.println("힙정렬 " + Arrays.toString(hea));
+
+        //도수정렬
+        int[] cou = sort.clone();
+        int max = cou[0];
+        for (int i = 1; i < nx; i++) {
+            if (cou[i] > max) max = cou[i];
+        }
+        countingSort(cou, nx, max);
+        System.out.println("도수정렬 " + Arrays.toString(cou));
+
+        //==================문자열 검색
+        String str = "AADEIIABCVEKWAABCE";
+        String checkStr = "ABC";
+
+        //브루트-포스트 검색(한칸씩 값이 있는지)
+        int bf = bfMatch(str, checkStr);
+        System.out.println("브루트-포스트 검색 " + bf);
+
+        //KMP법 검색
+        int kmp = kmpMatch(str, checkStr);
+        System.out.println("KMP 검색 " + kmp);
+
+        //보이어.무어법 검색
+        int bm = bmMatch(str, checkStr);
+        System.out.println("보이어.무어법 검색 " + bm);
     }
 
     //유클리드 호제법_최대공약수
@@ -309,13 +341,14 @@ public class LogicMemoContorller {
     }
 
     //퀵정렬
-    static int sort3elem(int[] x, int a, int b, int c){ //x[a], x[b]. x[c]를 정렬(가운데 값 인덱스를 반환)
-        if(x[b] < x[a]) swap(x,b,a);
-        if(x[c] < x[b]) swap(x,c,b);
-        if(x[b] < x[a]) swap(x,b,a);
+    static int sort3elem(int[] x, int a, int b, int c) { //x[a], x[b]. x[c]를 정렬(가운데 값 인덱스를 반환)
+        if (x[b] < x[a]) swap(x, b, a);
+        if (x[c] < x[b]) swap(x, c, b);
+        if (x[b] < x[a]) swap(x, b, a);
         return b;
     }
-    static void quickSort(int[] a, int left, int right){
+
+    static void quickSort(int[] a, int left, int right) {
         int pl = left;                                  // 왼쪽 커서
         int pr = right;                                 // 오른쪽 커서
         int m = sort3elem(a, pl, (pl + pr) / 2, pr);    // 맨 앞・맨 끝・가운데를 정렬
@@ -332,13 +365,13 @@ public class LogicMemoContorller {
                 swap(a, pl++, pr--);
         } while (pl <= pr);
 
-        if (left < pr)  quickSort(a, left, pr);
+        if (left < pr) quickSort(a, left, pr);
         if (pl < right) quickSort(a, pl, right);
     }
 
     //병합정렬
     static void mergeSort(int[] a, int left, int rigth) {
-        if(left < rigth){
+        if (left < rigth) {
             int i;
             int center = (left + rigth) / 2;
             int p = 0;
@@ -346,17 +379,135 @@ public class LogicMemoContorller {
             int k = left;
 
             mergeSort(a, left, center);
-            mergeSort(a, center+1, rigth);
+            mergeSort(a, center + 1, rigth);
 
-            for(i = left; i <= center; i++){
+            for (i = left; i <= center; i++) {
                 buff[p++] = a[i];
             }
-            while (i<= rigth && j <p){
+            while (i <= rigth && j < p) {
                 a[k++] = (buff[j] <= a[i]) ? buff[j++] : a[i++];
             }
-            while (j<p){
+            while (j < p) {
                 a[k++] = buff[j++];
             }
         }
     }
+
+    //힙정렬
+    static void downHeap(int[] a, int left, int right) {
+        int temp = a[left];
+        int child;
+        int parent;
+        for (parent = left; parent < (right + 1) / 2; parent = child) {
+            int cl = parent * 2 + 1;
+            int cr = cl + 1;
+            child = (cr <= right && a[cr] > a[cl]) ? cr : cl;
+            if (temp >= a[child])
+                break;
+            a[parent] = a[child];
+        }
+        a[parent] = temp;
+    }
+
+    static void heapSort(int[] a, int n) {
+        for (int i = (n - 1) / 2; i >= 0; i--) {
+            downHeap(a, i, n - 1);
+        }
+        for (int i = n - 1; i > 0; i--) {
+            swap(a, 0, i);
+            downHeap(a, 0, i - 1);
+        }
+    }
+
+    //도수정렬 (0이상 max 이하)
+    static void countingSort(int[] a, int n, int max) {
+        int[] f = new int[max + 1];        // 누적도수
+        int[] b = new int[n];              // 작업용 목표 배열
+
+        for (int i = 0; i < n; i++) f[a[i]]++;                  // [Step 1]
+        for (int i = 1; i <= max; i++) f[i] += f[i - 1];           // [Step 2]
+        for (int i = n - 1; i >= 0; i--) b[--f[a[i]]] = a[i];        // [Step 3]
+        for (int i = 0; i < n; i++) a[i] = b[i];                // [Step 4]
+    }
+
+    //브루트-포스법 검색
+    static int bfMatch(String txt, String pat) {
+        int pt = 0;        // txt 커서
+        int pp = 0;        // pat 커서
+
+        while (pt != txt.length() && pp != pat.length()) {
+            if (txt.charAt(pt) == pat.charAt(pp)) {
+                pt++;
+                pp++;
+            } else {
+                pt = pt - pp + 1;
+                pp = 0;
+            }
+        }
+        if (pp == pat.length())        // 검색 성공
+            return pt - pp;
+        return -1;                     // 검색 실패
+    }
+
+    //kmp검색
+    static int kmpMatch(String txt, String pat) {
+        int pt = 1;                                // txt를 따라가는 커서
+        int pp = 0;                                // pat를 따라가는 커서
+        int[] skip = new int[pat.length() + 1];    // 건너뛰기 표(skip 테이블)
+
+        // skip 테이블 작성
+        skip[pt] = 0;
+        while (pt != pat.length()) {
+            if (pat.charAt(pt) == pat.charAt(pp))
+                skip[++pt] = ++pp;
+            else if (pp == 0)
+                skip[++pt] = pp;
+            else
+                pp = skip[pp];
+        }
+
+        // 검색
+        pt = pp = 0;
+        while (pt != txt.length() && pp != pat.length()) {
+            if (txt.charAt(pt) == pat.charAt(pp)) {
+                pt++;
+                pp++;
+            } else if (pp == 0)
+                pt++;
+            else
+                pp = skip[pp];
+        }
+
+        if (pp == pat.length())        // 패턴의 모든 문자를 대조
+            return pt - pp;
+        return -1;                     // 검색 실패
+    }
+
+    //보이어.무어법 검색
+    static int bmMatch(String txt, String pat) {
+           int pt;                           // txt를 따라가는 커서
+           int pp;                           // pat를 따라가는 커서
+           int txtLen = txt.length();        // txt의 문자 개수
+           int patLen = pat.length();        // pat의 문자 개수
+           int[] skip = new int[Character.MAX_VALUE + 1];    // 건너뛰기 표(skip 테이블)
+
+           // skip 테이블 작성
+           for (pt = 0; pt <= Character.MAX_VALUE; pt++)
+               skip[pt] = patLen;
+           for (pt = 0; pt < patLen - 1; pt++)
+               skip[pat.charAt(pt)] = patLen - pt - 1;  // pt == patLen - 1
+           // 검색
+           while (pt < txtLen) {
+               pp = patLen - 1;                         // pat의 마지막 문자에 주목
+
+               while (txt.charAt(pt) == pat.charAt(pp)) {
+                   if (pp == 0)
+                       return pt;                  // 검색 성공
+                   pp--;
+                   pt--;
+               }
+               pt += (skip[txt.charAt(pt)] > patLen - pp) ? skip[txt.charAt(pt)] : patLen - pp;
+           }
+           return -1;                             // 검색 실패
+       }
 }
